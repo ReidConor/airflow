@@ -8,8 +8,6 @@ from airflow.operators.bash_operator import BashOperator
 
 buildFileConf = conf['cgcp']['buildFile']
 print(buildFileConf)
-buildFile="/Users/Conor/Google\ Drive/MSc/_dissertation/cgcp/build.sh "
-print(buildFile)
 
 dag = DAG(
     'cgcp',
