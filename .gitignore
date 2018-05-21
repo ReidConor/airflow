@@ -3,6 +3,7 @@ logs/
 *.cfg
 *.db
 *.pid
+config.sh
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
