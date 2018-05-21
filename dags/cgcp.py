@@ -8,6 +8,8 @@ from airflow.operators.bash_operator import BashOperator
 
 testFile = os.environ["AIRFLOW_CGCP_FILE_LOCATION_TEST"]
 buildFile = os.environ["AIRFLOW_CGCP_FILE_LOCATION_BUILD"]
+loadFile = os.environ["AIRFLOW_CGCP_FILE_LOCATION_LOAD"]
+dbManipulationsFile = os.environ["AIRFLOW_CGCP_FILE_LOCATION_DB_MANIP"]
 
 dag = DAG(
     'cgcp',
@@ -17,22 +19,28 @@ dag = DAG(
     catchup=False
 )
 
-dummy_operator = DummyOperator(
-    task_id='dummy_task',
-    retries=3,
-    dag=dag
-)
-
-test_proj = BashOperator(
+test = BashOperator(
     task_id= 'test',
     bash_command=testFile,
     dag=dag
 )
 
-build_proj = BashOperator(
+build = BashOperator(
     task_id= 'build',
     bash_command=buildFile,
     dag=dag
 )
 
-dummy_operator >> test_proj >> build_proj
+load = BashOperator(
+    task_id= 'load',
+    bash_command=loadFile,
+    dag=dag
+)
+
+dbManipulations = BashOperator(
+    task_id= 'dbManipulations',
+    bash_command=dbManipulationsFile,
+    dag=dag
+)
+
+test >> build >> load >> dbManipulations
