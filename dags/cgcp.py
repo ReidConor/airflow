@@ -6,8 +6,8 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.python_operator import PythonOperator
 from airflow.operators.bash_operator import BashOperator
 
-buildFileConf = conf['cgcp']['buildFile']
-print(buildFileConf)
+testFile = os.environ["AIRFLOW_CGCP_FILE_LOCATION_TEST"]
+buildFile = os.environ["AIRFLOW_CGCP_FILE_LOCATION_BUILD"]
 
 dag = DAG(
     'cgcp',
@@ -17,12 +17,22 @@ dag = DAG(
     catchup=False
 )
 
-dummy_operator = DummyOperator(task_id='dummy_task', retries=3, dag=dag)
-
-build_proj = BashOperator(
-    task_id= 'build',
-    bash_command=buildFileConf,
+dummy_operator = DummyOperator(
+    task_id='dummy_task',
+    retries=3,
     dag=dag
 )
 
-dummy_operator >> build_proj
+test_proj = BashOperator(
+    task_id= 'test',
+    bash_command=testFile,
+    dag=dag
+)
+
+build_proj = BashOperator(
+    task_id= 'build',
+    bash_command=buildFile,
+    dag=dag
+)
+
+dummy_operator >> test_proj >> build_proj
