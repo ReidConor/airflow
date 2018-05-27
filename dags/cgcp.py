@@ -11,6 +11,7 @@ buildFile = os.environ["AIRFLOW_CGCP_FILE_LOCATION_BUILD"]
 loadFile = os.environ["AIRFLOW_CGCP_FILE_LOCATION_LOAD"]
 dbManipulationsFile = os.environ["AIRFLOW_CGCP_FILE_LOCATION_DB_MANIP"]
 completeCasesFile = os.environ["AIRFLOW_CGCP_FILE_LOCATION_COMPLETE_CASES"]
+imputeFile = os.environ["AIRFLOW_CGCP_FILE_LOCATION_IMPUTE"]
 
 dag = DAG(
     'cgcp',
@@ -18,12 +19,6 @@ dag = DAG(
     schedule_interval=None,
     start_date=datetime(2018, 5, 20),
     catchup=False
-)
-
-test = BashOperator(
-    task_id= 'test',
-    bash_command=testFile,
-    dag=dag
 )
 
 build = BashOperator(
@@ -50,4 +45,10 @@ completeCases = BashOperator(
     dag=dag
 )
 
-test >> build >> load >> dbManipulations >> completeCases
+impute = BashOperator(
+    task_id= 'impute',
+    bash_command=imputeFile,
+    dag=dag
+)
+
+build >> load >> dbManipulations >> completeCases >> impute
