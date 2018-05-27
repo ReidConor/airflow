@@ -10,6 +10,7 @@ testFile = os.environ["AIRFLOW_CGCP_FILE_LOCATION_TEST"]
 buildFile = os.environ["AIRFLOW_CGCP_FILE_LOCATION_BUILD"]
 loadFile = os.environ["AIRFLOW_CGCP_FILE_LOCATION_LOAD"]
 dbManipulationsFile = os.environ["AIRFLOW_CGCP_FILE_LOCATION_DB_MANIP"]
+completeCasesFile = os.environ["AIRFLOW_CGCP_FILE_LOCATION_COMPLETE_CASES"]
 
 dag = DAG(
     'cgcp',
@@ -43,4 +44,10 @@ dbManipulations = BashOperator(
     dag=dag
 )
 
-test >> build >> load >> dbManipulations
+completeCases = BashOperator(
+    task_id= 'completeCases',
+    bash_command=completeCasesFile,
+    dag=dag
+)
+
+test >> build >> load >> dbManipulations >> completeCases
