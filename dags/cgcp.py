@@ -12,6 +12,7 @@ loadFile = os.environ["AIRFLOW_CGCP_FILE_LOCATION_LOAD"]
 dbManipulationsFile = os.environ["AIRFLOW_CGCP_FILE_LOCATION_DB_MANIP"]
 completeCasesFile = os.environ["AIRFLOW_CGCP_FILE_LOCATION_COMPLETE_CASES"]
 imputeFile = os.environ["AIRFLOW_CGCP_FILE_LOCATION_IMPUTE"]
+covariateCorrelationFile = os.environ["AIRFLOW_CGCP_FILE_LOCATION_COVARIATE_CORRELATION"]
 
 dag = DAG(
     'cgcp',
@@ -51,4 +52,10 @@ impute = BashOperator(
     dag=dag
 )
 
-build >> load >> dbManipulations >> completeCases >> impute
+covariateCorrelation = BashOperator(
+    task_id= 'covariateCorrelation',
+    bash_command=covariateCorrelationFile,
+    dag=dag
+)
+
+build >> load >> dbManipulations >> completeCases >> impute >> covariateCorrelation
